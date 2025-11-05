@@ -2,6 +2,7 @@
 async function verificarMissaoEmAndamento() {
     console.log('Iniciando verificação da missão...');
     while (true) {
+        document.querySelector("a.ui-small-icon.refresh")?.click();
         const missaoElement = document.querySelector('a.ui-icon.mission-my');
         if (missaoElement) {
             console.log('Missão em andamento...');
@@ -21,7 +22,7 @@ function executarAction() {
             container.open({
                 saveName: 'dungeon-attack',
                 title: 'Cavernas da Conquista'
-            }), 
+            }),
             {'tab':'attackDungeon'}
         );
         resolve();
@@ -36,13 +37,25 @@ async function aguardarDivCarregar() {
     if (button) button.click();
 
     await waitForElement('.ui-ib.tab-attack.active');
+    await delay(500); // Aguarda 5 segundos antes de verificar novamente
     preencherCampos();
 
-    const batalhaBtn = document.querySelector('button[value="Cerco à Fortaleza"]');
-    if (batalhaBtn) batalhaBtn.click();
-
-    await waitForElement('.window-wide.missions-main');
+    const cercoBtn = document.querySelector('button[value="Cerco à Fortaleza"]');
+    const batalhaBtn = document.querySelector('button[value="Batalha campal"]');
     
+    if (cercoBtn) {
+      cercoBtn.click();
+      console.log("✅ Clicou em 'Cerco à Fortaleza'");
+    } else if (batalhaBtn) {
+      batalhaBtn.click();
+      console.log("⚔️ 'Cerco à Fortaleza' não encontrado. Clicou em 'Batalha campal' como backup.");
+    } else {
+      console.warn("❌ Nenhum botão encontrado.");
+    }
+    
+    await waitForElement('.window-wide.missions-main');
+
+
     const closeBtn = document.querySelector('a[href="javascript:void(container.close({saveName: \'missions\', cancelCallback: true, flow: true, closedWith: \'click\'}))"]');
     if (closeBtn) closeBtn.click();
 
